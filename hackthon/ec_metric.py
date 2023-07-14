@@ -16,7 +16,7 @@ class EC2MetricCollector:
         self.cloudwatch = self.session.client('cloudwatch')
         self.instance_id = instance_id
 
-    def get_metric(self, namespace, metric_name):
+    def get_metric(self, namespace, metric_name) -> list:
         end_time = datetime.utcnow()
         start_time = end_time - timedelta(hours=1)
 
