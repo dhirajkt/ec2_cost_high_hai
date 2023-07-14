@@ -6,11 +6,13 @@ authors = ["dhirajkt <dhiraj.kumar@synaptic.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 boto3 = "^1.28.3"
 typer = "^0.9.0"
 python-dotenv = "^1.0.0"
 pandas = "^2.0.3"
+openai = "^0.27.8"
+matplotlib = "^3.7.2"
 
 
 [build-system]
