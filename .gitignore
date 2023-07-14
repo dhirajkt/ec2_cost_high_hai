@@ -1,0 +1,17 @@
+# Environments
+*.env
+venv/
+env/
+
+#Pycharm
+.idea/
+
+# log files
+*.log
+
+#osX
+**/.DS_Store
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod~]

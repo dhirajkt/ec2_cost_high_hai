@@ -1,10 +1,13 @@
+import io
+import re
 from typing import Any
 
 import pandas
 from pandas import DataFrame, Series
-import re
 
-df_instance = pandas.read_csv('/Users/kishan.tripathi/Desktop/hackathon/data/Amazon EC2 Instance Comparison.csv')[
+from hackthon.s3.s3_dump import S3Bucket
+
+df_instance = pandas.read_csv('Amazon_EC2_Instance_Comparison.csv')[
     ['API Name', 'Instance Memory']]
 
 
@@ -26,7 +29,7 @@ def top_n(arr: Series, n: int = 10) -> float | Any:
 def memory_in_gbs(percentage: float, instance_type: str):
     for index, row in df_instance.iterrows():
         if row['API Name'].__eq__(instance_type):
-            return percentage * float(re.sub(' GiB', "",row['Instance Memory']))
+            return percentage * float(re.sub(' GiB', "", row['Instance Memory']))
     return None
 
 
@@ -36,7 +39,14 @@ class CalculateUtilization:
         self.remote_path = f'/Users/kishan.tripathi/Desktop/hackathon/data/metrics.csv'
 
     def calculate_metrics(self) -> dict[str, float]:
-        metric_df: DataFrame = pandas.read_csv(self.remote_path)
+        bucket = S3Bucket()
+        csv_file_keys: list[str] = [key for key in bucket.list_files(prefix=f'{self.instance_id}/')
+         if key.endswith('.parquet')]
+        dfs: list[pandas.DataFrame] = []
+        for key in csv_file_keys:
+            df = pandas.read_parquet(key)
+            dfs.append(df)
+        metric_df: DataFrame = pandas.concat(dfs)
         calculated_metrics: dict[str, float] = {}
         calculated_metrics['avg_cpu_utilization'] = avg(metric_df['cpu_utilization_percent'])
         calculated_metrics['top_10_percent_cpu'] = top_n(metric_df['cpu_utilization_percent'])
@@ -53,5 +63,4 @@ class CalculateUtilization:
         calculated_metrics['disk_read_ops_average'] = avg(metric_df['disk_read_ops'])
         calculated_metrics['disk_write_ops_average'] = avg(metric_df['disk_write_ops'])
 
-        print(calculated_metrics)
         return calculated_metrics
