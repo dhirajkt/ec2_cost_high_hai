@@ -1,4 +1,3 @@
-import io
 import re
 from typing import Any
 
@@ -36,12 +35,11 @@ def memory_in_gbs(percentage: float, instance_type: str):
 class CalculateUtilization:
     def __init__(self, instance_id: str):
         self.instance_id: str = instance_id
-        self.remote_path = f'/Users/kishan.tripathi/Desktop/hackathon/data/metrics.csv'
 
     def calculate_metrics(self) -> dict[str, float]:
         bucket = S3Bucket()
         csv_file_keys: list[str] = [key for key in bucket.list_files(prefix=f'{self.instance_id}/')
-         if key.endswith('.parquet')]
+                                    if key.endswith('.csv')]
         dfs: list[pandas.DataFrame] = []
         for key in csv_file_keys:
             df = pandas.read_parquet(key)
