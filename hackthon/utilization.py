@@ -1,3 +1,4 @@
+import io
 import re
 from typing import Any
 
@@ -36,13 +37,14 @@ class CalculateUtilization:
     def __init__(self, instance_id: str):
         self.instance_id: str = instance_id
 
-    def calculate_metrics(self) -> dict[str, float]:
+    def calculate_metrics(self) -> DataFrame:
         bucket = S3Bucket()
         csv_file_keys: list[str] = [key for key in bucket.list_files(prefix=f'{self.instance_id}/')
                                     if key.endswith('.csv')]
         dfs: list[pandas.DataFrame] = []
         for key in csv_file_keys:
-            df = pandas.read_parquet(key)
+            csv_file = bucket.get_object(key=key)
+            df = pandas.read_csv(io.BytesIO(csv_file['Body'].read()))
             dfs.append(df)
         metric_df: DataFrame = pandas.concat(dfs)
         calculated_metrics: dict[str, float] = {}
@@ -60,5 +62,4 @@ class CalculateUtilization:
         calculated_metrics['cpu_credit_usage'] = metric_df['cpu_credit_usage'].max()
         calculated_metrics['disk_read_ops_average'] = avg(metric_df['disk_read_ops'])
         calculated_metrics['disk_write_ops_average'] = avg(metric_df['disk_write_ops'])
-
-        return calculated_metrics
+        return DataFrame.from_dict([calculated_metrics])

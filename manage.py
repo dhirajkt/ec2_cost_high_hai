@@ -13,7 +13,7 @@ def get_metrics():
 
 @app.command()
 def calculate_utilization():
-    CalculateUtilization('hahaha').calculate_metrics()
+    CalculateUtilization('warehouse').calculate_metrics()
 
 
 if __name__ == '__main__':
