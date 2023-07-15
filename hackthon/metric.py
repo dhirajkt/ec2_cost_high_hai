@@ -4,7 +4,7 @@ import pandas as pd
 import uuid
 
 from hackthon.ec2.ec2_instance import EC2Instance
-from hackthon.s3.ec_metric import EC2MetricCollector
+from hackthon.ec_metric import EC2MetricCollector
 from hackthon.s3.s3_dump import S3Bucket
 
 
